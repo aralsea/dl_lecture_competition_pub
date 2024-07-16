@@ -1,9 +1,10 @@
 import hydra
 import torch
 from hydra.core.hydra_config import HydraConfig
-from lib.datasets import ThingsMEGDatasetWithImages
-from lib.utils import set_seed
 from omegaconf import DictConfig
+
+from src.lib.datasets import ThingsMEGDatasetWithImages
+from src.lib.utils import set_seed
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="config-baseline")
