@@ -3,9 +3,9 @@ import os
 import hydra
 import numpy as np
 import torch
-from lib.datasets import ThingsMEGDataset
-from lib.models import BasicConvClassifier
-from lib.utils import set_seed
+from library.datasets import ThingsMEGDataset
+from library.models import BasicConvClassifier
+from library.utils import set_seed
 from omegaconf import DictConfig
 from termcolor import cprint
 from tqdm import tqdm

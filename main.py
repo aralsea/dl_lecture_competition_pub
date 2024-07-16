@@ -6,14 +6,15 @@ import torch
 import torch.nn.functional as F
 import wandb
 from hydra.core.hydra_config import HydraConfig
-from lib.datasets import ThingsMEGDataset
-from lib.models import BasicConvClassifier
-from lib.utils import set_seed
 from omegaconf import DictConfig
 from termcolor import cprint
 from torch.utils.data import DataLoader
 from torchmetrics import Accuracy
 from tqdm import tqdm
+
+from src.library.datasets import ThingsMEGDataset
+from src.library.models import BasicConvClassifier
+from src.library.utils import set_seed
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="config-mac")

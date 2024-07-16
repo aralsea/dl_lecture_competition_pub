@@ -15,12 +15,12 @@ from torch.utils.data import DataLoader
 from torchmetrics import Accuracy
 from tqdm import tqdm
 
-from src.lib.brain_module import BrainModule
-from src.lib.classification_module import MLPHead
-from src.lib.constants import PRETRAINED_MODEL_TO_LATENT_DIMENSION
-from src.lib.datasets import ThingsMEGDatasetWithImages
-from src.lib.function import MSE_loss
-from src.lib.utils import set_seed
+from src.library.brain_module import BrainModule
+from src.library.classification_module import MLPHead
+from src.library.constants import PRETRAINED_MODEL_TO_LATENT_DIMENSION
+from src.library.datasets import ThingsMEGDatasetWithImages
+from src.library.function import MSE_loss
+from src.library.utils import set_seed
 
 
 def train_classifier(

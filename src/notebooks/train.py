@@ -4,9 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from lib.brain_module import BrainModule
-from lib.datasets import ThingsMEGDatasetWithImages
-from lib.function import MSE_loss
+from library.brain_module import BrainModule
+from library.datasets import ThingsMEGDatasetWithImages
+from library.function import MSE_loss
 from torch.utils.data import DataLoader
 from torchmetrics import Accuracy
 from tqdm import tqdm
