@@ -70,6 +70,17 @@ def run(args: DictConfig) -> None:
 
     brain_module = BrainModule(out_dim=latent_dim)
 
+    if args.start_from_best:
+        try:
+            brain_module.load_state_dict(
+                torch.load(
+                    os.path.join(logdir, f"brain_module_best_{model_id}.pt"),
+                    map_location=args.device,
+                )
+            )
+            print("Best brain module loaded")
+        except FileNotFoundError:
+            print("Best brain module not found, starting from scratch")
     # ------------------
     #     Optimizer
     # ------------------

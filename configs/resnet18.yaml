@@ -9,7 +9,8 @@ device: cuda
 num_workers: 4
 seed: 1234
 use_wandb: False
-use_cache: False
+use_cache: True
+start_from_best: False
 
 data_dir: /content/data
 image_module:
