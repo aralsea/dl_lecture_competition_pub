@@ -87,7 +87,7 @@ def train_brain_module(
                 y.to(args.device),
                 subject_idx.to(args.device),
             )
-            z = image_module(image_X)
+            z = image_X if args.use_cache else image_module(image_X)
             with torch.no_grad():
                 clip_pred_z, mse_pred_z = brain_module(brain_X, subject_idx)
 
