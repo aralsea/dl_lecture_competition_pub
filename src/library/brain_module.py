@@ -220,7 +220,9 @@ class SubjectLayer(nn.Module):
         """
         super().__init__()
         self.mat = [
-            nn.Linear(num_channels, num_channels, bias=False)
+            nn.Linear(num_channels, num_channels, bias=False).to(
+                "cuda" if torch.cuda.is_available() else "cpu"
+            )
             for _ in range(num_subjects)
         ]
 
@@ -244,13 +246,13 @@ class SubjectLayer(nn.Module):
 
         for i in range(self.num_subjects):
             mask = subject_idx == i
-            print(f"{X.device=}")
-            print(f"{XT.device=}")
-            print(f"{YT.device=}")
-            print(f"{mask.device=}")
-            print(f"{self.mat[i].weight.device=}")
-            print(f"{self.mat[i].bias.device=}")
-            print(f"{XT[mask].device=}")
+            # print(f"{X.device=}")
+            # print(f"{XT.device=}")
+            # print(f"{YT.device=}")
+            # print(f"{mask.device=}")
+            # print(f"{self.mat[i].weight.device=}")
+            # print(f"{self.mat[i].bias.device=}")
+            # print(f"{XT[mask].device=}")
             if mask.any():
                 YT[mask] = self.mat[i](XT[mask])
         Y = YT.transpose(1, 2)  # (N, C, T)
