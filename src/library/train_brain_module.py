@@ -63,7 +63,7 @@ def train_brain_module(
 
         brain_module.eval()  # 評価モードにする
 
-        for image_X, brain_X, y, subject_idx in valid_loader:
+        for image_X, brain_X, y, subject_idx in tqdm(valid_loader, desc="Validation"):
             z = image_module(image_X.to(args.device))
             clip_pred_z, mse_pred_z = brain_module(
                 brain_X.to(args.device), subject_idx.to(args.device)

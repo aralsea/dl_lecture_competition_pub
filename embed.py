@@ -1,21 +1,17 @@
 import hydra
 import torch
-from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 
 from src.library.datasets import ThingsMEGDatasetWithImages
-from src.library.utils import set_seed
+from src.library.utils import get_model_id, set_seed
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="config-baseline")
 def run(args: DictConfig) -> None:
     set_seed(args.seed)
-    logdir = HydraConfig.get().runtime.output_dir
-
     # ------------------
     #    Dataloader
     # ------------------
-    loader_args = {"batch_size": args.batch_size, "num_workers": args.num_workers}
 
     train_set = ThingsMEGDatasetWithImages("train", args.data_dir)
     val_set = ThingsMEGDatasetWithImages("val", args.data_dir)
@@ -23,14 +19,11 @@ def run(args: DictConfig) -> None:
     # ------------------
     #       Model
     # ------------------
-    image_module = torch.hub.load(args.image_module.repo, args.image_module.model)
 
-    train_set.save_embedded_images(
-        image_module, args.image_module.repo + "-" + args.image_module.model
-    )
-    val_set.save_embedded_images(
-        image_module, args.image_module.repo + "-" + args.image_module.model
-    )
+    image_module = torch.hub.load(args.image_module.repo, args.image_module.model)
+    model_id = get_model_id(args)
+    train_set.save_embedded_images(image_module, model_id=model_id)
+    val_set.save_embedded_images(image_module, model_id=model_id)
 
 
 if __name__ == "__main__":

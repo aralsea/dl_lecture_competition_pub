@@ -12,7 +12,7 @@ from src.library.image_module import (
     get_image_module,
 )
 from src.library.train_classifier import train_classifier
-from src.library.utils import set_seed
+from src.library.utils import get_model_id, set_seed
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="config-baseline")
@@ -27,17 +27,18 @@ def run(args: DictConfig) -> None:
     #    Dataloader
     # ------------------
     loader_args = {"batch_size": args.batch_size, "num_workers": args.num_workers}
+    model_id = get_model_id(args)
 
     train_set = ThingsMEGDatasetWithImages(
         "train",
         args.data_dir,
-        # embedding_model_id=args.image_module.repo + "-" + args.image_module.model,
+        embedding_model_id=(model_id if args.use_cache else None),
     )
     train_loader = DataLoader(train_set, shuffle=True, **loader_args)
     val_set = ThingsMEGDatasetWithImages(
         "val",
         args.data_dir,
-        # embedding_model_id=args.image_module.repo + "-" + args.image_module.model,
+        embedding_model_id=(model_id if args.use_cache else None),
     )
     val_loader = DataLoader(val_set, shuffle=False, **loader_args)
 
