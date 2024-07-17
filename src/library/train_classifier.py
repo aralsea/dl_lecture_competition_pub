@@ -45,9 +45,8 @@ def train_classifier(
         for image_X, brain_X, y, subject_idxs in tqdm(train_loader, desc="Train"):
             image_X, y = image_X.to(args.device), y.to(args.device)
 
-            if not train_loader.dataset.use_embedded_images:  # type:ignore
-                image_X = image_module(image_X)
-            y_pred = classifier(image_X)
+            z = image_X if args.use_cache else image_module(image_X)
+            y_pred = classifier(z)
 
             loss = F.cross_entropy(y_pred, y)
             train_loss.append(loss.item())
@@ -64,9 +63,8 @@ def train_classifier(
             image_X, y = image_X.to(args.device), y.to(args.device)
 
             with torch.no_grad():
-                if not val_loader.dataset.use_embedded_images:  # type:ignore
-                    image_X = image_module(image_X)
-                y_pred = classifier(image_X)
+                z = image_X if args.use_cache else image_module(image_X)
+                y_pred = classifier(z)
 
             val_loss.append(F.cross_entropy(y_pred, y).item())
             val_acc.append(accuracy(y_pred, y).item())

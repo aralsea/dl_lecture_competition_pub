@@ -40,8 +40,6 @@ def train_brain_module(
     valid_loss_list = []
     valid_acc_list = []
 
-    min_val_loss = np.inf
-
     max_val_acc = 0
     accuracy = Accuracy(
         task="multiclass", num_classes=train_loader.dataset.num_classes, top_k=10
@@ -55,12 +53,16 @@ def train_brain_module(
 
         brain_module.train()  # 訓練モードにする
         for image_X, brain_X, y, subject_idx in tqdm(train_loader):
+            image_X, brain_X, y, subject_idx = (
+                image_X.to(args.device),
+                brain_X.to(args.device),
+                y.to(args.device),
+                subject_idx.to(args.device),
+            )
             optimizer.zero_grad()  # 勾配の初期化
 
-            z = image_module(image_X.to(args.device))
-            clip_pred_z, mse_pred_z = brain_module(
-                brain_X.to(args.device), subject_idx.to(args.device)
-            )
+            z = image_X if args.use_cache else image_module(image_X)
+            clip_pred_z, mse_pred_z = brain_module(brain_X, subject_idx)
 
             # MSE loss
             mse_loss = MSE_loss(z, mse_pred_z)
@@ -79,11 +81,15 @@ def train_brain_module(
         brain_module.eval()  # 評価モードにする
 
         for image_X, brain_X, y, subject_idx in tqdm(valid_loader, desc="Validation"):
-            z = image_module(image_X.to(args.device))
+            image_X, brain_X, y, subject_idx = (
+                image_X.to(args.device),
+                brain_X.to(args.device),
+                y.to(args.device),
+                subject_idx.to(args.device),
+            )
+            z = image_module(image_X)
             with torch.no_grad():
-                clip_pred_z, mse_pred_z = brain_module(
-                    brain_X.to(args.device), subject_idx.to(args.device)
-                )
+                clip_pred_z, mse_pred_z = brain_module(brain_X, subject_idx)
 
                 y_pred = classifier(clip_pred_z)
 
