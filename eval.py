@@ -64,7 +64,7 @@ def run(args: DictConfig) -> None:
     preds = torch.cat(preds, dim=0).numpy()
     np.save(os.path.join(logdir, f"submission_{model_id}"), preds)
     cprint(
-        f"Submission {preds.shape} saved at {os.path.join(logdir, f"submission_{model_id}")}",
+        f"Submission {preds.shape} saved at {os.path.join(logdir, f'submission_{model_id}')}",
         "cyan",
     )  # type: ignore
 
