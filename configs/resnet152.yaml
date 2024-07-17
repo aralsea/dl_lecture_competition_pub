@@ -12,8 +12,8 @@ use_wandb: True
 
 data_dir: data
 image_module:
-  repo: "facebookresearch/dinov2"
-  model: "dinov2_vits14"
+  repo: "pytorch/vision:v0.10.0"
+  model: "resnet152"
 
 # Evaluation
 model_path:

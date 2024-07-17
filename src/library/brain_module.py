@@ -23,10 +23,13 @@ class BrainModule(nn.Module):
     def __init__(self, out_dim: int = F) -> None:
         super().__init__()
 
+        self.in_channels = C
         self.backbone = BackBone(in_channels=C, out_channels=F1)
         self.affine_aggrigation = nn.Linear(T, 1)
         self.clip_head = MLP(in_dim=F1, out_dim=out_dim)
         self.mse_head = MLP(in_dim=F1, out_dim=out_dim)
+
+        self.temperature = nn.Parameter(torch.rand(1))  # used for temperature scaling
 
     def forward(
         self, X: torch.Tensor, subject_idx: torch.Tensor
@@ -34,6 +37,11 @@ class BrainModule(nn.Module):
         # X: (N, C, T)
         # subject_idx: (N)
         assert X.shape[0] == subject_idx.shape[0]
+        if X.shape[1] != self.in_channels:
+            print(X.shape)
+            print(self.in_channels)
+            raise ValueError("X must have the same number of channels as the model")
+        assert X.shape[1] == self.in_channels
         Y = self.backbone(X, subject_idx=subject_idx)  # (N, F1, T)
         Y_agg = self.affine_aggrigation(Y)  # (N, F1, 1)
         Y_agg = torch.squeeze(Y_agg, dim=2)  # (N, F1)
@@ -143,18 +151,27 @@ class SpatialAttention2D(nn.Module):
             stride=1,
         )
 
+        self.k = torch.arange(
+            1,
+            self.max_freq + 1,
+            device=("cuda" if torch.cuda.is_available() else "cpu"),
+        )  # (K)
+        self.l = torch.arange(
+            1,
+            self.max_freq + 1,
+            device=("cuda" if torch.cuda.is_available() else "cpu"),
+        )  # (K)
+
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         # X: (N, C, T)
         # output: (N, C, T)
 
         # weights
         x, y = self.positions[:, 0], self.positions[:, 1]
-        k = torch.arange(1, self.max_freq + 1)  # (K)
-        l = torch.arange(1, self.max_freq + 1)  # (K)
 
         # Compute 2π(kx + ly) for all combinations of k, l, and positions
-        kx = 2 * torch.pi * k.view(1, -1, 1) * x.view(-1, 1, 1)  # (C, K, 1)
-        ly = 2 * torch.pi * l.view(1, 1, -1) * y.view(-1, 1, 1)  # (C, 1, K)
+        kx = 2 * torch.pi * self.k.view(1, -1, 1) * x.view(-1, 1, 1)  # (C, K, 1)
+        ly = 2 * torch.pi * self.l.view(1, 1, -1) * y.view(-1, 1, 1)  # (C, 1, K)
         phase = kx + ly  # (C, K, K)
 
         # Compute cos and sin terms

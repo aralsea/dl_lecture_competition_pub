@@ -5,7 +5,7 @@ NUM_CLASSES = 1854
 
 
 # ViTのヘッド部分
-class MLPHead(nn.Moduel):
+class MLPHead(nn.Module):
     def __init__(
         self, in_dim: int, num_classes: int = NUM_CLASSES, dropout_ratio: float = 0.2
     ) -> None:
