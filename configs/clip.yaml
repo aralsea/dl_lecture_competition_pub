@@ -3,7 +3,7 @@ classifier_epochs: 3
 brain_module_epochs: 200
 classifier_lr: 0.001
 brain_module_lr: 0.0003
-loss_weight: 0.75
+loss_weight: 0.95
 
 device: cuda
 num_workers: 4

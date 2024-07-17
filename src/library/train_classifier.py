@@ -86,7 +86,7 @@ def train_classifier(
                 }
             )
 
-        if np.mean(val_acc) > max_val_acc:
+        if np.mean(val_acc) >= max_val_acc:
             cprint("New best.", "cyan")
             torch.save(
                 classifier.state_dict(),

@@ -52,7 +52,7 @@ def train_brain_module(
         val_acc = []
 
         brain_module.train()  # 訓練モードにする
-        for image_X, brain_X, y, subject_idx in tqdm(train_loader):
+        for image_X, brain_X, y, subject_idx in tqdm(train_loader, desc="Train"):
             image_X, brain_X, y, subject_idx = (
                 image_X.to(args.device),
                 brain_X.to(args.device),
