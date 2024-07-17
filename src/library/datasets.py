@@ -61,7 +61,7 @@ class ThingsMEGDatasetWithImages(torch.utils.data.Dataset):
 
         self.split = split
         self.brain_data_dir = data_dir + "/data-omni"
-        self.image_data_dir = data_dir + "/images"
+        self.image_data_dir = data_dir + "/Images"
         self.num_classes = 1854
         self.num_samples = len(
             glob(os.path.join(self.brain_data_dir, f"{split}_X", "*.npy"))
