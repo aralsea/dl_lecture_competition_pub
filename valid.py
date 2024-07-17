@@ -3,7 +3,6 @@ import os
 import hydra
 import numpy as np
 import torch
-import torch.nn as nn
 import wandb
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
@@ -61,13 +60,14 @@ def run(args: DictConfig) -> None:
         )
     )
 
-    model = nn.Sequential(brain_module, classifier).to(args.device)
     preds = []
-    model.eval()
+    classifier.eval()
+    brain_module.eval()
     for brain_X, subject_idxs in tqdm(test_loader, desc="Validation"):
-        preds.append(
-            model(brain_X.to(args.device), subject_idxs.to(args.device)).detach().cpu()
+        clip_latent_vector, mse_latent_vector = brain_module(
+            brain_X.to(args.device), subject_idxs.to(args.device)
         )
+        preds.append(classifier(clip_latent_vector).detach().cpu())
 
     preds = torch.cat(preds, dim=0).numpy()
     np.save(os.path.join(logdir, "submission"), preds)

@@ -1,3 +1,5 @@
+import os
+
 import hydra
 import torch
 import wandb
@@ -6,6 +8,7 @@ from omegaconf import DictConfig
 from torch.utils.data import DataLoader
 
 from src.library.brain_module import BrainModule
+from src.library.classification_module import MLPHead
 from src.library.datasets import ThingsMEGDatasetWithImages
 from src.library.image_module import (
     PRETRAINED_MODEL_TO_LATENT_DIMENSION,
@@ -53,6 +56,16 @@ def run(args: DictConfig) -> None:
     for param in image_module.parameters():
         param.requires_grad = False
 
+    classifier = MLPHead(in_dim=latent_dim, num_classes=train_set.num_classes)
+    classifier.load_state_dict(
+        torch.load(
+            os.path.join(logdir, f"classifier_best_{model_id}.pt"),
+            map_location=args.device,
+        )
+    )
+    for param in classifier.parameters():
+        param.requires_grad = False
+
     brain_module = BrainModule(out_dim=latent_dim)
 
     # ------------------
@@ -74,6 +87,7 @@ def run(args: DictConfig) -> None:
         train_loader,
         val_loader,
         image_module=image_module,
+        classifier=classifier,
         brain_module=brain_module,
         optimizer=brain_optimizer,
     )
