@@ -60,8 +60,11 @@ def run(args: DictConfig) -> None:
         preds.append(classifier(clip_latent_vector)).detach().cpu()  # type: ignore
 
     preds = torch.cat(preds, dim=0).numpy()
-    np.save(os.path.join(logdir, "submission"), preds)
-    cprint(f"Submission {preds.shape} saved at {logdir}", "cyan")  # type: ignore
+    np.save(os.path.join(logdir, f"submission_{model_id}"), preds)
+    cprint(
+        f"Submission {preds.shape} saved at {os.path.join(logdir, f"submission_{model_id}")}",
+        "cyan",
+    )  # type: ignore
 
 
 if __name__ == "__main__":
