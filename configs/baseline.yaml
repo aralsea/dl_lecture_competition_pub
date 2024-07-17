@@ -1,5 +1,5 @@
 batch_size: 256
-classifier_epochs: 2
+classifier_epochs: 3
 brain_module_epochs: 10
 classifier_lr: 0.001
 brain_module_lr: 0.0003
