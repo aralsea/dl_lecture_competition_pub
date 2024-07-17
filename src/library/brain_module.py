@@ -57,6 +57,7 @@ class BackBone(nn.Module):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.spatial_attention = SpatialAttention2D(num_channels=self.in_channels)
+        self.bn = nn.BatchNorm1d(self.in_channels)
         self.subject_layer = SubjectLayer(num_channels=self.in_channels)
         self.temporal_conv_block_stack = TemporalConvBlockStack(
             in_channels=self.in_channels, out_channels=self.out_channels
@@ -67,6 +68,7 @@ class BackBone(nn.Module):
         assert X.shape[1] == self.in_channels
         assert X.shape[0] == subject_idx.shape[0]
         Y = self.spatial_attention(X)
+        Y = self.bn(Y)
         Y = self.subject_layer(Y, subject_idx)
         Y = self.temporal_conv_block_stack(Y)
         assert Y.shape[1] == self.out_channels
@@ -277,6 +279,7 @@ class TemporalConvBlockStack(nn.Module):
                 for idx in range(NUM_BLOCKES)
             ]
         )  # output: (N, D2, T)
+        self.bn = nn.BatchNorm1d(D2)
         self.linear = nn.Linear(D2, out_channels, bias=False)
 
     def forward(self, X: torch.Tensor) -> torch.Tensor:
@@ -284,6 +287,7 @@ class TemporalConvBlockStack(nn.Module):
         assert X.shape[1] == C
         X = self.blocks(X)  # (N, D2, T)
         XT = X.transpose(1, 2)  # (N, T, D2)
+        XT = self.bn(XT)  # (N, T, D2)
         XT = self.linear(XT)  # (N, T, F1)
         assert XT.shape[2] == F1
         return XT.transpose(1, 2)  # type:ignore
@@ -307,31 +311,34 @@ class ConvBlock(nn.Module):
 
         self.in_channels = in_channels
         self.out_channels = out_channels
+        self.bn1 = nn.BatchNorm1d(self.out_channels)
+        self.act1 = nn.GELU()
         self.res_conv1 = ResConv1D(
             self.in_channels, self.out_channels, dilation=(2**idx) % 5
         )
-        self.bn1 = nn.BatchNorm1d(self.out_channels)
-        self.act1 = nn.GELU()
-        self.res_conv2 = ResConv1D(
-            self.out_channels, self.out_channels, dilation=(2 ** (idx + 1)) % 5
-        )
         self.bn2 = nn.BatchNorm1d(self.out_channels)
         self.act2 = nn.GELU()
-        self.res_conv3 = ResConv1D(
-            self.out_channels, self.out_channels * 2, dilation=1, bias=True
+        self.res_conv2 = ResConv1D(
+            self.out_channels, self.out_channels * 2, dilation=(2 ** (idx + 1)) % 5
         )
+        self.bn3 = nn.BatchNorm1d(self.out_channels * 2)
         self.act3 = nn.GLU(dim=1)  # (N, out_channels * 2, T) -> (N, out_channels, T)
+        self.res_conv3 = ResConv1D(
+            self.out_channels, self.out_channels, dilation=1, bias=True
+        )
 
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         # X: (N, in_channels, T)
-        Y = self.res_conv1(X)  # (N, out_channels, T)
-        Y = self.bn1(Y)
+        Y = self.bn1(X)
         Y = self.act1(Y)  # (N, out_channels, T)
-        Y = self.res_conv2(Y)  # (N, out_channels, T)
+        Y = self.res_conv1(X)  # (N, out_channels, T)
         Y = self.bn2(Y)
         Y = self.act2(Y)  # (N, out_channels, T)
-        Y = self.res_conv3(Y)  # (N, out_channels * 2, T)
+        Y = self.res_conv2(Y)  # (N, out_channels * 2, T)
+        Y = self.bn3(Y)  # (N, out_channels * 2, T)
         Y = self.act3(Y)  # (N, out_channels, T) <- GLU halves the number of channels
+        Y = self.res_conv3(Y)  # (N, out_channels, T)
+
         assert Y.shape[1] == self.out_channels
         return Y  # type:ignore
 
