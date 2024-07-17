@@ -286,8 +286,8 @@ class TemporalConvBlockStack(nn.Module):
         # X: (N, C, T)
         assert X.shape[1] == C
         X = self.blocks(X)  # (N, D2, T)
+        X = self.bn(X)  # (N, D2, T)
         XT = X.transpose(1, 2)  # (N, T, D2)
-        XT = self.bn(XT)  # (N, T, D2)
         XT = self.linear(XT)  # (N, T, F1)
         assert XT.shape[2] == F1
         return XT.transpose(1, 2)  # type:ignore
