@@ -45,6 +45,8 @@ def train_brain_module(
             z = image_module(image_X.to(args.device))
             pred_z = brain_module(brain_X.to(args.device), subject_idx.to(args.device))
 
+            print(z)
+            print(pred_z)
             # MSE loss
             mse_loss = MSE_loss(z, pred_z)
 
