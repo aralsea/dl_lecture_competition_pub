@@ -61,7 +61,7 @@ def run(args: DictConfig) -> None:
         clip_latent_vector, mse_latent_vector = brain_module(
             brain_X.to(args.device), subject_idx.to(args.device)
         )
-        preds.append(classifier(clip_latent_vector)).detach().cpu()  # type: ignore
+        preds.append(classifier(clip_latent_vector).detach().cpu())  # type: ignore
 
     preds = torch.cat(preds, dim=0).numpy()
     np.save(os.path.join(logdir, f"submission_{model_id}"), preds)
