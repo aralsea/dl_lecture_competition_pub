@@ -238,7 +238,9 @@ class SubjectLayer(nn.Module):
         XT = X.transpose(1, 2)  # (N, T, C)
 
         # バッチ全体に対して一度に処理を行う
-        YT = torch.zeros_like(XT).to(X.device)
+        YT = torch.zeros_like(
+            XT, device=("cuda" if torch.cuda.is_available() else "cpu")
+        )
 
         for i in range(self.num_subjects):
             mask = subject_idx == i
