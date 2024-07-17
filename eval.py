@@ -45,11 +45,12 @@ def run(args: DictConfig) -> None:
     classifier.load_state_dict(
         torch.load(os.path.join(logdir, f"classifier_best_{model_id}.pt"))
     )
+    classifier.to(args.device)
     brain_module = BrainModule(out_dim=latent_dim).to(args.device)
     brain_module.load_state_dict(
         torch.load(os.path.join(logdir, f"brain_module_best_{model_id}.pt"))
     )
-
+    brain_module.to(args.device)
     # ------------------
     #  Start evaluation
     # ------------------
