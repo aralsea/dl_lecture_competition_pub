@@ -43,15 +43,15 @@ def train_brain_module(
             optimizer.zero_grad()  # 勾配の初期化
 
             z = image_module(image_X.to(args.device))
-            pred_z = brain_module(brain_X.to(args.device), subject_idx.to(args.device))
+            clip_pred_z, mse_pred_z = brain_module(
+                brain_X.to(args.device), subject_idx.to(args.device)
+            )
 
-            print(z)
-            print(pred_z)
             # MSE loss
-            mse_loss = MSE_loss(z, pred_z)
+            mse_loss = MSE_loss(z, mse_pred_z)
 
             # clip loss
-            clip_loss = CLIP_loss(z, pred_z, brain_module.temperature)
+            clip_loss = CLIP_loss(z, clip_pred_z, brain_module.temperature)
 
             # loss
             loss = args.loss_weight * clip_loss + (1.0 - args.loss_weight) * mse_loss
@@ -65,13 +65,15 @@ def train_brain_module(
 
         for image_X, brain_X, y, subject_idx in valid_loader:
             z = image_module(image_X.to(args.device))
-            pred_z = brain_module(brain_X.to(args.device), subject_idx.to(args.device))
+            clip_pred_z, mse_pred_z = brain_module(
+                brain_X.to(args.device), subject_idx.to(args.device)
+            )
 
             # MSE loss
-            mse_loss = MSE_loss(z, pred_z)
+            mse_loss = MSE_loss(z, mse_pred_z)
 
             # clip loss
-            clip_loss = CLIP_loss(z, pred_z, brain_module.temperature)
+            clip_loss = CLIP_loss(z, clip_pred_z, brain_module.temperature)
 
             # loss
             loss = args.loss_weight * clip_loss + (1.0 - args.loss_weight) * mse_loss
