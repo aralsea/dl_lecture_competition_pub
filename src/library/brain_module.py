@@ -311,7 +311,7 @@ class ConvBlock(nn.Module):
 
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.bn1 = nn.BatchNorm1d(self.out_channels)
+        self.bn1 = nn.BatchNorm1d(self.in_channels)
         self.act1 = nn.GELU()
         self.res_conv1 = ResConv1D(
             self.in_channels, self.out_channels, dilation=(2**idx) % 5
