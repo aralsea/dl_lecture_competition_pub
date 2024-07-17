@@ -128,7 +128,7 @@ def train_brain_module(
                 brain_module.state_dict(),
                 os.path.join(logdir, f"brain_module_best_{model_id}.pt"),
             )
-            max_val_acc = np.mean(losses_valid)
+            max_val_acc = np.mean(val_acc)
 
         if scheduler is not None:
             scheduler.step()
