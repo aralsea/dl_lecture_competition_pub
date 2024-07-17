@@ -3,14 +3,15 @@ import os
 import hydra
 import numpy as np
 import torch
-from library.brain_module import BrainModule
-from library.classification_module import MLPHead
-from library.datasets import ThingsMEGDatasetWithImages
-from library.image_module import PRETRAINED_MODEL_TO_LATENT_DIMENSION
-from library.utils import get_model_id, set_seed
 from omegaconf import DictConfig
 from termcolor import cprint
 from tqdm import tqdm
+
+from src.library.brain_module import BrainModule
+from src.library.classification_module import MLPHead
+from src.library.datasets import ThingsMEGDatasetWithImages
+from src.library.image_module import PRETRAINED_MODEL_TO_LATENT_DIMENSION
+from src.library.utils import get_model_id, set_seed
 
 
 @torch.no_grad()
