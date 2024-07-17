@@ -40,7 +40,7 @@ def train_brain_module(
     valid_loss_list = []
     valid_acc_list = []
 
-    max_val_acc = 0
+    min_losses_valid = 1000000
     accuracy = Accuracy(
         task="multiclass", num_classes=train_loader.dataset.num_classes, top_k=10
     ).to(args.device)
@@ -122,13 +122,13 @@ def train_brain_module(
                     "val_acc": np.mean(val_acc),
                 }
             )
-        if np.mean(np.mean(val_acc)) > max_val_acc:
+        if np.mean(np.mean(losses_valid)) < min_losses_valid:
             cprint("New best.", "cyan")
             torch.save(
                 brain_module.state_dict(),
                 os.path.join(logdir, f"brain_module_best_{model_id}.pt"),
             )
-            max_val_acc = np.mean(val_acc)
+            min_losses_valid = np.mean(losses_valid)
 
         if scheduler is not None:
             scheduler.step()
