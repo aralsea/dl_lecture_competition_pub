@@ -1,4 +1,4 @@
-batch_size: 128
+batch_size: 256
 classifier_epochs: 5
 brain_module_epochs: 10
 classifier_lr: 0.001
@@ -9,7 +9,7 @@ device: cuda
 num_workers: 4
 seed: 1234
 use_wandb: True
-use_cache: True
+use_cache: False
 
 data_dir: /content/data
 image_module:

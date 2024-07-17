@@ -156,8 +156,7 @@ class ThingsMEGDatasetWithImages(torch.utils.data.Dataset):
         )
 
     def save_embedded_images(self, model: nn.Module, model_id: str) -> None:
-        model_id = model_id.replace("/", "-")
-        for image_path in tqdm(self.image_file_paths):
+        for image_path in tqdm(self.image_file_paths, desc=f"Embedding {self.split}"):
             tensor_image = load_image_as_tensor(
                 os.path.join(self.image_data_dir, image_path)
             ).unsqueeze(0)
