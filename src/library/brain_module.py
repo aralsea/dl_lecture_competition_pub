@@ -219,12 +219,12 @@ class SubjectLayer(nn.Module):
         SpatialAttention3D -> num_channels = C3D
         """
         super().__init__()
-        self.mat = [
-            nn.Linear(num_channels, num_channels, bias=False).to(
-                "cuda" if torch.cuda.is_available() else "cpu"
-            )
-            for _ in range(num_subjects)
-        ]
+        self.mat = nn.ModuleList(
+            [
+                nn.Linear(num_channels, num_channels, bias=False)
+                for _ in range(num_subjects)
+            ]
+        )
 
         self.num_subjects = num_subjects
 
@@ -268,20 +268,21 @@ class TemporalConvBlockStack(nn.Module):
 
     def __init__(self, in_channels: int = C, out_channels: int = F1) -> None:
         super().__init__()
-        self.blocks = [
-            ConvBlock(
-                idx=idx,
-                in_channels=(in_channels if idx == 0 else D2),
-            )
-            for idx in range(NUM_BLOCKES)
-        ]  # output: (N, D2, T)
+        self.blocks = nn.Sequential(
+            *[
+                ConvBlock(
+                    idx=idx,
+                    in_channels=(in_channels if idx == 0 else D2),
+                )
+                for idx in range(NUM_BLOCKES)
+            ]
+        )  # output: (N, D2, T)
         self.linear = nn.Linear(D2, out_channels, bias=False)
 
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         # X: (N, C, T)
         assert X.shape[1] == C
-        for i, block in enumerate(self.blocks):
-            X = block(X)
+        X = self.blocks(X)  # (N, D2, T)
         XT = X.transpose(1, 2)  # (N, T, D2)
         XT = self.linear(XT)  # (N, T, F1)
         assert XT.shape[2] == F1
