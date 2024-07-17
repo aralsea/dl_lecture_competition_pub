@@ -43,7 +43,7 @@ def train_brain_module(
             optimizer.zero_grad()  # 勾配の初期化
 
             z = image_module(image_X.to(args.device))
-            pred_z = brain_module(brain_X.to(args.device), subject_idx)
+            pred_z = brain_module(brain_X.to(args.device), subject_idx.to(args.device))
 
             # MSE loss
             mse_loss = MSE_loss(z, pred_z)
@@ -63,7 +63,7 @@ def train_brain_module(
 
         for image_X, brain_X, y, subject_idx in valid_loader:
             z = image_module(image_X.to(args.device))
-            pred_z = brain_module(brain_X.to(args.device), subject_idx)
+            pred_z = brain_module(brain_X.to(args.device), subject_idx.to(args.device))
 
             # MSE loss
             mse_loss = MSE_loss(z, pred_z)
