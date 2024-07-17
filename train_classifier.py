@@ -20,7 +20,7 @@ from src.library.utils import get_model_id, set_seed
 def run(args: DictConfig) -> None:
     set_seed(args.seed)
     model_id = get_model_id(args)
-    logdir = f"outputs/{model_id}"
+    logdir = f"outputs/{model_id + str(args.loss_weight)}"
 
     os.makedirs(logdir, exist_ok=True)
 

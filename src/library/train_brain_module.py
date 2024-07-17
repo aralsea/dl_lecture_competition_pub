@@ -138,5 +138,5 @@ def train_brain_module(
     plt.plot(valid_acc_list, label="valid acc")
     # 凡例を表示
     plt.legend()
-    # plt.savefig("drive/MyDrive/Colab Notebooks/DLBasics2023_colab/Lecture05/loss.png")
+    plt.savefig(os.path.join(logdir, "/brain_module_loss.png"))
     plt.show()
