@@ -20,6 +20,8 @@ def run(args: DictConfig) -> None:
     model_id = get_model_id(args)
     logdir = f"outputs/{model_id}"
 
+    os.makedirs(logdir, exist_ok=True)
+
     latent_dim = PRETRAINED_MODEL_TO_LATENT_DIMENSION[
         (args.image_module.repo, args.image_module.model)
     ]

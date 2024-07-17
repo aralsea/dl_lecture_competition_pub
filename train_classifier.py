@@ -1,3 +1,5 @@
+import os
+
 import hydra
 import torch
 import wandb
@@ -19,6 +21,8 @@ def run(args: DictConfig) -> None:
     set_seed(args.seed)
     model_id = get_model_id(args)
     logdir = f"outputs/{model_id}"
+
+    os.makedirs(logdir, exist_ok=True)
 
     if args.use_wandb:
         wandb.init(mode="online", dir=logdir, project="MEG-classification")
