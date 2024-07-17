@@ -244,6 +244,13 @@ class SubjectLayer(nn.Module):
 
         for i in range(self.num_subjects):
             mask = subject_idx == i
+            print(f"{X.device=}")
+            print(f"{XT.device=}")
+            print(f"{YT.device=}")
+            print(f"{mask.device=}")
+            print(f"{self.mat[i].weight.device=}")
+            print(f"{self.mat[i].bias.device=}")
+            print(f"{XT[mask].device=}")
             if mask.any():
                 YT[mask] = self.mat[i](XT[mask])
         Y = YT.transpose(1, 2)  # (N, C, T)
