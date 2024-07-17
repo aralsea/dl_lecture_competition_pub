@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 @torch.no_grad()
 @hydra.main(version_base=None, config_path="configs", config_name="config")
-def run(args: DictConfig):
+def run(args: DictConfig) -> None:
     set_seed(args.seed)
     savedir = os.path.dirname(args.model_path)
 

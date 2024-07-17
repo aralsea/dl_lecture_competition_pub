@@ -3,7 +3,6 @@ import os
 import hydra
 import torch
 import wandb
-from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 from torch.utils.data import DataLoader
 
@@ -21,7 +20,8 @@ from src.library.utils import get_model_id, set_seed
 @hydra.main(version_base=None, config_path="configs", config_name="config-baseline")
 def run(args: DictConfig) -> None:
     set_seed(args.seed)
-    logdir = HydraConfig.get().runtime.output_dir
+    model_id = get_model_id(args)
+    logdir = f"outputs/{model_id}"
 
     if args.use_wandb:
         wandb.init(mode="online", dir=logdir, project="MEG-classification")
@@ -63,6 +63,7 @@ def run(args: DictConfig) -> None:
             map_location=args.device,
         )
     )
+    print("Best classifier loaded")
     for param in classifier.parameters():
         param.requires_grad = False
 
