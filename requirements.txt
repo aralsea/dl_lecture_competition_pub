@@ -1,4 +1,4 @@
-einops,
+einops
 hydra-core>=1.3.2
 mne>=1.7.1
 termcolor
